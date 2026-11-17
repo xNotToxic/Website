@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@^6.18.0/dist/maplibre-gl.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root{--bg:#07090c;--card:rgba(255,255,255,.045);--bd:rgba(255,255,255,.1);--ink:#f4f7f5;--mut:#b7c4be;--em:#0fb86a;--ru:#ff3b4e;--gold:#f0c75e;color-scheme:dark}
@@ -44,6 +45,20 @@ body{margin:0;background:radial-gradient(900px 500px at 85% -5%,rgba(15,184,106,
 .sh p{margin:0;color:var(--mut)}
 .mapwrap{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 30px 80px rgba(0,0,0,.5);background:#0a1114}
 #map{width:100%;height:min(76vh,720px);min-height:480px;background:#0a1114}
+#map3d{display:none;width:100%;height:min(76vh,720px);min-height:480px;background:#0a1114}
+.mapwrap.is-3d #map{display:none}
+.mapwrap.is-3d #map3d{display:block}
+.mapwrap.is-3d #nt{display:none}
+#map3d .maplibregl-ctrl-group{background:rgba(7,9,12,.88);border:1px solid var(--bd);box-shadow:none}
+#map3d .maplibregl-ctrl-group button{filter:invert(1)}
+#map3d .maplibregl-ctrl-attrib{background:rgba(7,9,12,.78);color:#b7c4be}
+#map3d .maplibregl-ctrl-attrib a{color:#d5e4dc}
+.m3d-pin{position:relative;width:16px;height:16px;border:2px solid #fff;border-radius:50%;background:var(--ru);box-shadow:0 0 14px rgba(255,59,78,.8);cursor:pointer}
+.m3d-pin span{position:absolute;left:17px;top:-12px;white-space:nowrap;color:#fff;font:700 14px Outfit,system-ui,sans-serif;text-shadow:0 0 4px #000,0 0 9px #000,0 0 14px #000;pointer-events:none}
+.m3d-pin.active{background:var(--em);box-shadow:0 0 14px rgba(15,184,106,.9)}
+.m3d-pin.landmark{width:14px;height:14px;background:var(--gold);box-shadow:0 0 12px rgba(240,199,94,.85)}
+.m3d-pin.landmark span{font-size:12px;font-weight:600}
+.ctrl .ctrlsep{width:1px;flex:none;margin:4px 2px;background:var(--bd)}
 .ctrl{position:absolute;z-index:1000;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:999px;background:rgba(7,9,12,.82);backdrop-filter:blur(14px);border:1px solid var(--bd);white-space:nowrap;max-width:calc(100% - 20px);overflow-x:auto}
 .ctrl button,.ctrl a{padding:8px 16px;border-radius:999px;border:0;background:transparent;color:var(--ink);font:inherit;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;transition:all .25s}
 .ctrl button:hover,.ctrl a:hover{background:rgba(255,255,255,.12);transform:scale(1.07)}
@@ -123,7 +138,7 @@ footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50
 .vmsg{color:var(--mut);margin:6px 2px}
 .vn{padding:24px;max-width:48ch}
 @media(max-width:560px){.logo{height:44px}.student{padding:6px 6px 6px 14px;font-size:.85rem}.student span{display:none}}
-@media(max-width:920px){.hero{grid-template-columns:1fr;min-height:0}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--bd)}.logo{height:52px}.top nav{display:none}.vlay{grid-template-columns:1fr}.vr{max-height:300px}#map{height:62vh;min-height:420px}}
+@media(max-width:920px){.hero{grid-template-columns:1fr;min-height:0}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--bd)}.logo{height:52px}.top nav{display:none}.vlay{grid-template-columns:1fr}.vr{max-height:300px}#map,#map3d{height:62vh;min-height:420px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -155,7 +170,8 @@ footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50
 <div class="mapwrap">
 <div class="pwrap"><div class="picker" id="picker"></div></div>
 <div id="map" class="far"></div>
-<div class="ctrl"><button data-m="dark" class="on">Dark</button><button data-m="street">Streets</button><button data-m="sat">Satellite</button><button id="ba">All UAE</button><a href="#detail">Landmarks &darr;</a></div>
+<div id="map3d" aria-label="Interactive 3D terrain map"></div>
+<div class="ctrl"><button data-view="2d" class="on" aria-pressed="true">2D</button><button data-view="3d" aria-pressed="false">3D Terrain</button><span class="ctrlsep" aria-hidden="true"></span><button data-m="dark" class="on">Dark</button><button data-m="street">Streets</button><button data-m="sat">Satellite</button><button id="ba">All UAE</button><a href="#detail">Landmarks &darr;</a></div>
 <div id="nt" hidden>Map tiles could not load. Check your internet connection, or host this file on a website (http or https) instead of opening it directly.</div>
 </div>
 </section>
@@ -191,12 +207,15 @@ const nt=document.getElementById('nt');
 let bad=0,mode='dark';
 Object.values(MODES).forEach(g=>g.eachLayer(l=>{l.on('tileerror',()=>{if(++bad>8)nt.hidden=false});l.on('tileload',()=>{bad=0;nt.hidden=true})}));
 MODES.dark.addTo(map);
-function setMode(m){map.removeLayer(MODES[mode]);mode=m;MODES[m].addTo(map);document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m))}
+function setMode(m){map.removeLayer(MODES[mode]);mode=m;MODES[m].addTo(map);document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m));if(window.set3DMapStyle)window.set3DMapStyle(m)}
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+let viewMode='2d';
+function setView(v){viewMode=v;const wrap=document.querySelector('.mapwrap');wrap.classList.toggle('is-3d',v==='3d');document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===v;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active))});if(v==='3d'){if(window.start3DMap)window.start3DMap()}else{if(window.sync3DTo2D)window.sync3DTo2D();requestAnimationFrame(()=>map.invalidateSize())}}
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 const fz=()=>el.classList.toggle('far',map.getZoom()<11);
 map.on('zoomend',fz);fz();
 const lg=L.layerGroup().addTo(map),cm={};
-const fly=(c,z)=>map.flyTo(c,z,{duration:1.6});
+const fly=(c,z)=>{map.flyTo(c,z,{duration:1.6});if(window.fly3DTo)window.fly3DTo(c,z)};
 E.forEach(e=>{const m=L.marker(e.c,{icon:L.divIcon({className:'cm',html:'<i></i><span>'+e.n+'</span>',iconSize:[0,0]})}).addTo(map);m.on('click',()=>pick(e.id,true));cm[e.id]=m});
 const picker=document.getElementById('picker');
 E.forEach(e=>{const b=document.createElement('button');b.className='pk';b.id='c-'+e.id;b.textContent=e.n;b.onclick=()=>pick(e.id,true);picker.appendChild(b)});
@@ -246,8 +265,13 @@ E.forEach(e=>{document.getElementById('c-'+e.id).classList.toggle('on',e.id===id
 render(byId[id]);
 lg.clearLayers();
 byId[id].L.forEach(([n,k])=>L.marker(LL[k],{icon:L.divIcon({className:'lm',html:'<i></i>',iconSize:[0,0]})}).on('click',()=>fly(LL[k],15)).bindTooltip(n,{permanent:true,direction:'right',offset:[12,0],className:'lmt'}).addTo(lg));
-centerPk(id);if(go)fly(V[id][0],V[id][1])}
+centerPk(id);if(window.update3DSelection)window.update3DSelection(id);if(go)fly(V[id][0],V[id][1])}
 pick('ad',false);
+window.getUAEMapData=()=>({emirates:E,landmarks:LL,all:ALL});
+window.getUAEMapView=()=>{const c=map.getCenter();return{center:[c.lng,c.lat],zoom:map.getZoom()}};
+window.setUAE2DView=(c,z)=>map.setView(c,z,{animate:false});
+window.pickUAEEmirate=(id,go=true)=>pick(id,go);
+window.flyUAELandmark=k=>{if(LL[k])fly(LL[k],15)};
 const fl=document.getElementById('flag'),fx=fl.getContext('2d');
 const W=560,H=280,PD=18;
 const fo=document.createElement('canvas');fo.width=W;fo.height=H;
@@ -280,5 +304,198 @@ requestAnimationFrame(loop);
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const n=+e.target.dataset.n,plain=e.target.dataset.plain,t0=performance.now();const s=m=>{const p=Math.min(1,(m-t0)/1600),v=Math.round(n*(1-Math.pow(1-p,3)));e.target.textContent=plain?v:v.toLocaleString('en-US');if(p<1)requestAnimationFrame(s)};requestAnimationFrame(s)}));
 document.querySelectorAll('[data-n]').forEach(e=>io.observe(e));
 </script>
+
+<script type="module">
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@^6.18.0/dist/maplibre-gl.mjs';
+
+const BASES = {
+  dark: {
+    tiles: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    reference: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}'
+  },
+  street: {
+    tiles: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
+  },
+  sat: {
+    tiles: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    reference: 'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+  }
+};
+
+const TERRAIN_TILES = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+let map3d = null;
+let currentStyle = 'dark';
+let emirateMarkers = [];
+let landmarkMarkers = [];
+let activeEmirate = 'ad';
+
+function styleFor(mode) {
+  const base = BASES[mode] || BASES.dark;
+  const sources = {
+    base: {
+      type: 'raster',
+      tiles: [base.tiles],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: 'Map tiles &copy; Esri'
+    },
+    terrain: {
+      type: 'raster-dem',
+      tiles: [TERRAIN_TILES],
+      tileSize: 256,
+      maxzoom: 15,
+      encoding: 'terrarium',
+      attribution: 'Elevation &copy; AWS Terrain Tiles / Mapzen'
+    },
+    hillshade: {
+      type: 'raster-dem',
+      tiles: [TERRAIN_TILES],
+      tileSize: 256,
+      maxzoom: 15,
+      encoding: 'terrarium',
+      attribution: 'Elevation &copy; AWS Terrain Tiles / Mapzen'
+    }
+  };
+  const layers = [
+    { id: 'base-raster', type: 'raster', source: 'base' },
+    {
+      id: 'terrain-shading',
+      type: 'hillshade',
+      source: 'hillshade',
+      paint: { 'hillshade-exaggeration': 0.28, 'hillshade-shadow-color': '#172028' }
+    }
+  ];
+  if (base.reference) {
+    sources.reference = {
+      type: 'raster',
+      tiles: [base.reference],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: 'Labels & boundaries &copy; Esri'
+    };
+    layers.push({ id: 'reference-overlay', type: 'raster', source: 'reference', paint: { 'raster-opacity': 0.94 } });
+  }
+  return {
+    version: 8,
+    sources,
+    layers,
+    terrain: { source: 'terrain', exaggeration: 1.45 }
+  };
+}
+
+function makePin(name, kind, onClick) {
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.className = 'm3d-pin ' + kind;
+  el.title = name;
+  el.setAttribute('aria-label', name);
+  const label = document.createElement('span');
+  label.textContent = name;
+  el.appendChild(label);
+  el.addEventListener('click', ev => {
+    ev.stopPropagation();
+    onClick();
+  });
+  return el;
+}
+
+function buildMarkers() {
+  const data = window.getUAEMapData?.();
+  if (!data || !map3d) return;
+  emirateMarkers.forEach(x => x.marker.remove());
+  landmarkMarkers.forEach(x => x.marker.remove());
+  emirateMarkers = [];
+  landmarkMarkers = [];
+
+  data.emirates.forEach(e => {
+    const el = makePin(e.n, 'emirate', () => window.pickUAEEmirate?.(e.id, true));
+    const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([e.c[1], e.c[0]])
+      .addTo(map3d);
+    emirateMarkers.push({ id: e.id, marker, el });
+  });
+
+  data.emirates.forEach(e => {
+    e.L.forEach(([name, key]) => {
+      const coord = data.landmarks[key];
+      if (!coord) return;
+      const el = makePin(name, 'landmark', () => window.flyUAELandmark?.(key));
+      const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([coord[1], coord[0]])
+        .addTo(map3d);
+      landmarkMarkers.push({ emirateId: e.id, marker, el });
+    });
+  });
+  updateSelection(activeEmirate);
+}
+
+function updateSelection(id) {
+  activeEmirate = id || activeEmirate;
+  emirateMarkers.forEach(x => x.el.classList.toggle('active', x.id === activeEmirate));
+  landmarkMarkers.forEach(x => {
+    x.el.style.display = x.emirateId === activeEmirate ? 'block' : 'none';
+  });
+}
+
+function start3DMap() {
+  if (map3d) {
+    requestAnimationFrame(() => map3d.resize());
+    return;
+  }
+  const view = window.getUAEMapView?.() || { center: [54, 24.4], zoom: 7 };
+  const activeButton = document.querySelector('[data-m].on');
+  currentStyle = activeButton?.dataset.m || 'dark';
+  const selectedButton = document.querySelector('.pk.on');
+  activeEmirate = selectedButton?.id?.replace(/^c-/, '') || 'ad';
+
+  map3d = new maplibregl.Map({
+    container: 'map3d',
+    style: styleFor(currentStyle),
+    center: view.center,
+    zoom: view.zoom,
+    pitch: 58,
+    bearing: -12,
+    minZoom: 5,
+    maxZoom: 18,
+    maxPitch: 80,
+    antialias: true,
+    attributionControl: { compact: true }
+  });
+  map3d.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+  map3d.addControl(new maplibregl.FullscreenControl(), 'top-right');
+  map3d.on('load', buildMarkers);
+  map3d.on('style.load', () => {
+    // Markers are DOM overlays and survive style changes. This event is also
+    // where terrain is re-applied if a style provider refreshes the style.
+    if (map3d && map3d.getSource('terrain') && !map3d.getTerrain()) {
+      map3d.setTerrain({ source: 'terrain', exaggeration: 1.45 });
+    }
+  });
+  map3d.on('error', ev => console.warn('3D map tile/style issue:', ev.error || ev));
+}
+
+window.start3DMap = start3DMap;
+window.set3DMapStyle = mode => {
+  if (!map3d || mode === currentStyle) return;
+  currentStyle = mode;
+  map3d.setStyle(styleFor(mode));
+};
+window.fly3DTo = (latLng, zoom) => {
+  if (!map3d) return;
+  map3d.flyTo({ center: [latLng[1], latLng[0]], zoom, pitch: 62, duration: 1600 });
+};
+window.update3DSelection = updateSelection;
+window.sync3DTo2D = () => {
+  if (!map3d || !window.getUAEMapView) return;
+  const c = map3d.getCenter();
+  const z = map3d.getZoom();
+  // Keep the hidden 2D map at the same location when switching back.
+  window.setUAE2DView?.([c.lat, c.lng], z);
+};
+
+// If 3D was selected before this module finished downloading, initialize now.
+if (document.querySelector('.mapwrap.is-3d')) start3DMap();
+</script>
+
 </body>
 </html>
