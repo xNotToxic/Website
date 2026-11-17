@@ -44,12 +44,6 @@ body{margin:0;background:radial-gradient(900px 500px at 85% -5%,rgba(15,184,106,
 .sh p{margin:0;color:var(--mut)}
 .mapwrap{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 30px 80px rgba(0,0,0,.5);background:#0a1114}
 #map{width:100%;height:min(76vh,720px);min-height:480px;background:#0a1114}
-.picker{position:absolute;z-index:1000;left:16px;top:16px;bottom:16px;width:230px;display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:18px;background:rgba(7,9,12,.82);backdrop-filter:blur(14px);border:1px solid var(--bd);overflow-y:auto}
-.pk{display:flex;align-items:center;gap:12px;flex:1;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--ink);font:inherit;font-weight:500;cursor:pointer;text-align:left;transition:all .25s}
-.pk i{font-style:normal;font-size:.75rem;color:var(--gold);font-weight:600}
-.pk:hover{background:rgba(255,255,255,.08);transform:scale(1.05)}
-.pk.on{background:var(--em);box-shadow:0 0 22px rgba(15,184,106,.5)}
-.pk.on i{color:#fff}
 .ctrl{position:absolute;z-index:1000;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:999px;background:rgba(7,9,12,.82);backdrop-filter:blur(14px);border:1px solid var(--bd);white-space:nowrap;max-width:calc(100% - 20px);overflow-x:auto}
 .ctrl button,.ctrl a{padding:8px 16px;border-radius:999px;border:0;background:transparent;color:var(--ink);font:inherit;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;transition:all .25s}
 .ctrl button:hover,.ctrl a:hover{background:rgba(255,255,255,.12);transform:scale(1.07)}
@@ -92,7 +86,6 @@ body{margin:0;background:radial-gradient(900px 500px at 85% -5%,rgba(15,184,106,
 #vm{position:fixed;inset:0;z-index:3000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);animation:fade .25s}
 #vm[hidden]{display:none}
 @keyframes fade{from{opacity:0}}
-.vb{position:relative;width:min(960px,100%);background:#0c1115;border:1px solid var(--bd);border-radius:22px;padding:18px;animation:pop .35s}
 @keyframes pop{from{transform:scale(.9);opacity:0}}
 .vb h4{margin:0 50px 12px 4px;font-size:1.2rem}
 .vf{aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;display:grid;place-items:center;text-align:center;color:var(--mut)}
@@ -101,7 +94,36 @@ body{margin:0;background:radial-gradient(900px 500px at 85% -5%,rgba(15,184,106,
 .vx:hover{transform:scale(1.15);background:var(--ru)}
 .vy{display:inline-block;margin:12px 4px 0;color:var(--gold);text-decoration:none;font-weight:500}
 footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50px 20px;font-size:.9rem}
-@media(max-width:920px){.hero{grid-template-columns:1fr;min-height:0}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--bd)}.logo{height:52px}.top nav a{padding:8px 12px}.picker{position:static;width:auto;flex-direction:row;border-radius:0;border:0;border-bottom:1px solid var(--bd);overflow-x:auto;overflow-y:hidden}.pk{flex:none;min-height:42px;white-space:nowrap}#map{height:62vh;min-height:420px}}
+.student{display:flex;align-items:center;gap:10px;padding:7px 7px 7px 18px;border-radius:999px;background:var(--card);border:1px solid var(--bd);white-space:nowrap;transition:transform .3s}
+.student:hover{transform:scale(1.05)}
+.student span{color:var(--mut);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+.student b{font-weight:600}
+.student i{font-style:normal;font-weight:800;font-size:.85rem;padding:5px 14px;border-radius:999px;background:var(--em)}
+.pwrap{position:absolute;z-index:1000;top:16px;left:72px;right:72px;display:flex;justify-content:center;pointer-events:none}
+.picker{position:relative;pointer-events:auto;display:flex;gap:6px;padding:6px;border-radius:999px;background:rgba(7,9,12,.82);backdrop-filter:blur(14px);border:1px solid var(--bd);max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.picker::-webkit-scrollbar{display:none}
+.pk{flex:none;padding:8px 16px;border-radius:999px;border:0;background:transparent;color:var(--ink);font:inherit;font-size:.9rem;font-weight:500;white-space:nowrap;cursor:pointer;transition:all .25s}
+.pk:hover{background:rgba(255,255,255,.12);transform:scale(1.07)}
+.pk.on{background:var(--em);box-shadow:0 0 20px rgba(15,184,106,.5)}
+.vb{position:relative;width:min(1180px,100%);max-height:94vh;overflow-y:auto;background:#0c1115;border:1px solid var(--bd);border-radius:22px;padding:18px;animation:pop .35s}
+.vlay{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:16px}
+.vs{display:flex;gap:8px;margin-bottom:10px}
+.vs input{flex:1;min-width:0;padding:11px 16px;border-radius:999px;border:1px solid var(--bd);background:rgba(255,255,255,.06);color:var(--ink);font:inherit}
+.vs input:focus{outline:2px solid var(--em)}
+.vs button{padding:0 20px;border:0;border-radius:999px;background:var(--em);color:#fff;font:inherit;font-weight:600;cursor:pointer;transition:transform .25s}
+.vs button:hover{transform:scale(1.08)}
+.vr{display:flex;flex-direction:column;gap:8px;max-height:460px;overflow-y:auto;padding-right:4px}
+.vi{display:flex;gap:10px;align-items:center;text-align:left;padding:6px;border-radius:12px;border:1px solid transparent;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;transition:all .25s}
+.vi:hover{transform:scale(1.03);border-color:var(--em)}
+.vi.on{border-color:var(--gold);background:rgba(240,199,94,.1)}
+.vi img{width:112px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;flex:none}
+.vi span{min-width:0}
+.vi b{font-size:.85rem;line-height:1.3;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vi small{color:var(--mut);font-size:.75rem}
+.vmsg{color:var(--mut);margin:6px 2px}
+.vn{padding:24px;max-width:48ch}
+@media(max-width:560px){.logo{height:44px}.student{padding:6px 6px 6px 14px;font-size:.85rem}.student span{display:none}}
+@media(max-width:920px){.hero{grid-template-columns:1fr;min-height:0}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--bd)}.logo{height:52px}.top nav{display:none}.vlay{grid-template-columns:1fr}.vr{max-height:300px}#map{height:62vh;min-height:420px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -109,6 +131,7 @@ footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50
 <canvas id="stars"></canvas>
 <header class="top">
 <img class="logo" src="https://www.adbips.com/images/logo.png" alt="ADBIPS" referrerpolicy="no-referrer">
+<div class="student"><span>Student</span><b>Isam Eldein Farid</b><i>9-A</i></div>
 <nav><a href="#explore">Map</a><a href="#detail">Landmarks</a></nav>
 </header>
 <main class="wrap">
@@ -130,7 +153,7 @@ footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50
 <section id="explore">
 <div class="sh"><h2>Explore the map</h2><p>Scroll or pinch to zoom, drag to move, and pick an emirate to fly there.</p></div>
 <div class="mapwrap">
-<div class="picker" id="picker"></div>
+<div class="pwrap"><div class="picker" id="picker"></div></div>
 <div id="map" class="far"></div>
 <div class="ctrl"><button data-m="dark" class="on">Dark</button><button data-m="street">Streets</button><button data-m="sat">Satellite</button><button id="ba">All UAE</button><a href="#detail">Landmarks &darr;</a></div>
 <div id="nt" hidden>Map tiles could not load. Check your internet connection, or host this file on a website (http or https) instead of opening it directly.</div>
@@ -139,7 +162,9 @@ footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50
 <section id="detail"><div id="dbody" aria-live="polite"></div></section>
 </main>
 <footer>United Arab Emirates &middot; Founded 2 December 1971</footer>
-<div id="vm" hidden><div class="vb" role="dialog" aria-modal="true" aria-labelledby="vt"><button class="vx" id="vx" aria-label="Close">&times;</button><h4 id="vt"></h4><div class="vf" id="vf"></div><a class="vy" id="vy" target="_blank" rel="noopener">Open on YouTube &rarr;</a></div></div>
+<div id="vm" hidden><div class="vb" role="dialog" aria-modal="true" aria-labelledby="vt"><button class="vx" id="vx" aria-label="Close">&times;</button><h4 id="vt"></h4>
+<div class="vlay"><div><div class="vf" id="vf"></div><a class="vy" id="vy" target="_blank" rel="noopener">Open on YouTube &rarr;</a></div>
+<div><form class="vs" id="vs"><input id="vq" type="search" placeholder="Search YouTube" autocomplete="off"><button type="submit">Search</button></form><div class="vr" id="vr"></div></div></div></div></div>
 <script>
 const E=[
 {id:'ad',n:'Abu Dhabi',cap:'Abu Dhabi City',area:'67,340 km²',yr:'2 Dec 1971',c:[24.47,54.37],lb:[24.0,54.0],t:'The capital and largest emirate, covering about 87% of the country, from Gulf islands to the dunes of the Empty Quarter and the oasis city of Al Ain.',L:[['Sheikh Zayed Grand Mosque','ad-mosque','Opened in 2007, it holds over 40,000 worshippers and features one of the largest hand-knotted carpets in the world.'],['Qasr Al Hosn','ad-hosn','Began as an 18th-century watchtower guarding a freshwater well, and grew into the seat of government.'],['Louvre Abu Dhabi','ad-louvre','A museum on Saadiyat Island under a lattice dome that filters light into a rain of stars. Opened in 2017.'],['Al Ain Oasis','ad-oasis','Date palm groves watered by ancient falaj channels, a UNESCO World Heritage site since 2011.']]},
@@ -155,6 +180,7 @@ const IMGDATA={"ad-hosn": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2w
 const LL={'ad-mosque':[24.4128,54.475],'ad-hosn':[24.4825,54.3533],'ad-louvre':[24.5336,54.3985],'ad-oasis':[24.225,55.77],'dxb-burj':[25.1972,55.2744],'dxb-creek':[25.2285,55.335],'dxb-fahidi':[25.2637,55.2972],'dxb-hatta':[24.8085,56.1168],'shj-book':[25.3153,55.3924],'shj-noor':[25.351,55.3718],'shj-heart':[25.3593,55.3855],'shj-mleiha':[25.1028,55.8643],'ajm-museum':[25.4105,55.441],'ajm-dhow':[25.413,55.448],'ajm-zorah':[25.4352,55.4955],'uaq-fort':[25.566,55.553],'uaq-siniyah':[25.6,55.65],'uaq-dour':[25.57,55.68],'rak-jais':[25.953,56.143],'rak-dhayah':[25.79,55.95],'rak-hamra':[25.699,55.79],'fuj-bidya':[25.4423,56.3578],'fuj-fort':[25.1244,56.3484],'fuj-wadi':[25.185,56.21],'fuj-snoopy':[25.517,56.368]};
 const V={ad:[[24.45,54.5],9],dxb:[[25.2,55.3],10],shj:[[25.35,55.55],10],ajm:[[25.41,55.46],12],uaq:[[25.56,55.6],11],rak:[[25.8,56.0],10],fuj:[[25.2,56.3],10]};
 const ALL=[[24.4,54.0],7];
+const YT_API_KEY='AIzaSyA-k14a1yljAON-7NwwtcJG1RSAZQ1ZAMs';
 const VIDEOS={'ad-mosque':'DuxXwHwUTXo'};
 const el=document.getElementById('map');
 const map=L.map(el,{zoomControl:false,center:ALL[0],zoom:ALL[1],minZoom:6,maxZoom:18});
@@ -173,16 +199,41 @@ const lg=L.layerGroup().addTo(map),cm={};
 const fly=(c,z)=>map.flyTo(c,z,{duration:1.6});
 E.forEach(e=>{const m=L.marker(e.c,{icon:L.divIcon({className:'cm',html:'<i></i><span>'+e.n+'</span>',iconSize:[0,0]})}).addTo(map);m.on('click',()=>pick(e.id,true));cm[e.id]=m});
 const picker=document.getElementById('picker');
-E.forEach((e,i)=>{const b=document.createElement('button');b.className='pk';b.id='c-'+e.id;b.innerHTML='<i>0'+(i+1)+'</i><span>'+e.n+'</span>';b.onclick=()=>pick(e.id,true);picker.appendChild(b)});
+E.forEach(e=>{const b=document.createElement('button');b.className='pk';b.id='c-'+e.id;b.textContent=e.n;b.onclick=()=>pick(e.id,true);picker.appendChild(b)});
+function centerPk(id){const b=document.getElementById('c-'+id);picker.scrollTo({left:b.offsetLeft-picker.clientWidth/2+b.offsetWidth/2,behavior:'smooth'})}
 document.getElementById('ba').onclick=()=>{document.querySelectorAll('.pk').forEach(c=>c.classList.remove('on'));Object.values(cm).forEach(m=>m.getElement().classList.remove('on'));lg.clearLayers();fly(ALL[0],ALL[1])};
 const dbody=document.getElementById('dbody');
 const vm=document.getElementById('vm'),vf=document.getElementById('vf');
-function openVideo(k,n){
-document.getElementById('vt').textContent=n;
-document.getElementById('vy').href='https://www.youtube.com/results?search_query='+encodeURIComponent(n+' UAE');
-vf.innerHTML=VIDEOS[k]?'<iframe src="https://www.youtube.com/embed/'+VIDEOS[k]+'?autoplay=1&rel=0" title="'+n+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>':'<div style="padding:24px">No video has been added for this landmark yet.<br>Use the link below to find one on YouTube.</div>';
-vm.hidden=false}
-function closeVideo(){vm.hidden=true;vf.innerHTML=''}
+const vq=document.getElementById('vq'),vr=document.getElementById('vr'),vyl=document.getElementById('vy');
+const cache={};
+let curK='',vtok=0;
+function note(m){const d=document.createElement('div');d.className='vn';d.textContent=m;vf.replaceChildren(d)}
+function play(id){
+vf.innerHTML='<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1" title="Video player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+vr.querySelectorAll('.vi').forEach(b=>b.classList.toggle('on',b.dataset.id===id))}
+async function search(q){
+const tok=++vtok;
+vyl.href='https://www.youtube.com/results?search_query='+encodeURIComponent(q);
+if(!YT_API_KEY){vr.innerHTML='';if(VIDEOS[curK])play(VIDEOS[curK]);else note('Add your free YouTube API key to YT_API_KEY in the script to turn on automatic video search.');return}
+vr.innerHTML='<p class="vmsg">Searching YouTube...</p>';
+let items=cache[q];
+if(!items){
+try{
+const r=await fetch('https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&videoEmbeddable=true&safeSearch=strict&q='+encodeURIComponent(q)+'&key='+YT_API_KEY);
+const d=await r.json();
+if(d.error)throw new Error(d.error.message);
+items=d.items.map(v=>({id:v.id.videoId,t:v.snippet.title,c:v.snippet.channelTitle,im:v.snippet.thumbnails.medium.url}));
+cache[q]=items
+}catch(err){if(tok===vtok){vr.innerHTML='';note('YouTube search failed: '+err.message)}return}
+}
+if(tok!==vtok)return;
+if(!items.length){vr.innerHTML='<p class="vmsg">No results. Try another search.</p>';return}
+vr.innerHTML=items.map(v=>'<button class="vi" data-id="'+v.id+'"><img src="'+v.im+'" alt=""><span><b>'+v.t+'</b><small>'+v.c+'</small></span></button>').join('');
+vr.querySelectorAll('.vi').forEach(b=>b.onclick=()=>play(b.dataset.id));
+play(items[0].id)}
+function openVideo(k,n){curK=k;document.getElementById('vt').textContent=n;const q=n+' Landmark Showcase';vq.value=q;vm.hidden=false;search(q)}
+function closeVideo(){vm.hidden=true;vf.replaceChildren();vtok++}
+document.getElementById('vs').onsubmit=ev=>{ev.preventDefault();const q=vq.value.trim();if(q)search(q)};
 document.getElementById('vx').onclick=closeVideo;
 vm.onclick=ev=>{if(ev.target===vm)closeVideo()};
 addEventListener('keydown',ev=>{if(ev.key==='Escape')closeVideo()});
@@ -195,7 +246,7 @@ E.forEach(e=>{document.getElementById('c-'+e.id).classList.toggle('on',e.id===id
 render(byId[id]);
 lg.clearLayers();
 byId[id].L.forEach(([n,k])=>L.marker(LL[k],{icon:L.divIcon({className:'lm',html:'<i></i>',iconSize:[0,0]})}).on('click',()=>fly(LL[k],15)).bindTooltip(n,{permanent:true,direction:'right',offset:[12,0],className:'lmt'}).addTo(lg));
-if(go)fly(V[id][0],V[id][1])}
+centerPk(id);if(go)fly(V[id][0],V[id][1])}
 pick('ad',false);
 const fl=document.getElementById('flag'),fx=fl.getContext('2d');
 const W=560,H=280,PD=18;
