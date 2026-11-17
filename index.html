@@ -3,138 +3,144 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>United Arab Emirates | Interactive Map</title>
+<title>United Arab Emirates | Explore the Seven Emirates</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-:root{--bg:#05080a;--s1:#0b1216;--s2:#111b20;--ink:#eaf2ef;--mut:#b4c6be;--line:#1e2d33;--g:#00a14b;--r:#ff2a3d;--gold:#e9c46a;color-scheme:dark}
+:root{--bg:#07090c;--card:rgba(255,255,255,.045);--bd:rgba(255,255,255,.1);--ink:#f4f7f5;--mut:#b7c4be;--em:#0fb86a;--ru:#ff3b4e;--gold:#f0c75e;color-scheme:dark}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.7 Sora,system-ui,sans-serif;overflow-x:hidden}
-#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 20px 60px}
-nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:16px}
-nav img,.logo-fb{height:44px;width:auto;filter:drop-shadow(0 0 12px rgba(0,161,75,.35))}
-.logo-fb{font-weight:800;font-size:1.5rem;letter-spacing:.12em;line-height:44px}
-nav span{color:var(--mut);font-size:.85rem;letter-spacing:.2em;text-transform:uppercase}
-.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding:30px 0 40px}
-.hero h1{font-size:clamp(2.4rem,6vw,4.6rem);line-height:1.05;margin:0 0 16px;font-weight:800;background:linear-gradient(100deg,#fff 20%,var(--g) 55%,var(--r) 90%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+html{scroll-behavior:smooth;scroll-padding-top:100px}
+body{margin:0;background:radial-gradient(900px 500px at 85% -5%,rgba(15,184,106,.18),transparent 60%),radial-gradient(800px 500px at -5% 30%,rgba(255,59,78,.12),transparent 60%),var(--bg);color:var(--ink);font:400 17px/1.7 Outfit,system-ui,sans-serif;overflow-x:hidden}
+#stars{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.top{position:sticky;top:0;z-index:2000;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px max(20px,calc((100vw - 1280px)/2));background:rgba(7,9,12,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.logo{height:68px;width:auto;max-width:58vw;object-fit:contain}
+.top nav{display:flex;gap:6px}
+.top nav a{color:var(--ink);text-decoration:none;padding:9px 18px;border-radius:999px;font-weight:500;transition:background .25s,transform .25s}
+.top nav a:hover{background:rgba(15,184,106,.25);transform:scale(1.07)}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 20px}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:78vh;padding:40px 0}
+.tag{display:inline-block;padding:6px 16px;border:1px solid var(--bd);border-radius:999px;background:var(--card);color:var(--gold);font-size:.85rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:22px}
+.hero h1{font-size:clamp(2.8rem,7vw,5.6rem);line-height:1;margin:0 0 22px;font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--gold),var(--em) 60%,var(--gold));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
 @keyframes shine{to{background-position:-200% 0}}
-.hero p{color:var(--mut);max-width:52ch;margin:0 0 22px}
-.stats{display:flex;gap:12px;flex-wrap:wrap}
-.stat{background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:12px 18px;min-width:120px;transition:transform .3s,border-color .3s}
-.stat b{display:block;font-size:1.6rem;font-weight:800}
-.stat small{color:var(--mut);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
-.main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
-.mapcol{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.mapbox{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:#04141a;box-shadow:0 0 60px rgba(0,161,75,.08)}
-.ctrl button,.chip{font:inherit;color:var(--ink);background:rgba(17,27,32,.85);border:1px solid var(--line);border-radius:12px;cursor:pointer;backdrop-filter:blur(8px);transition:all .25s}
-.ctrl button:hover,.chip:hover{border-color:var(--g);background:rgba(0,161,75,.2);transform:scale(1.07)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{padding:7px 14px;font-size:.85rem}
-.chip.on{background:var(--g);border-color:var(--g);box-shadow:0 0 18px rgba(0,161,75,.5)}
-.hint{margin:0;color:var(--mut);font-size:.8rem}
-.panel{background:linear-gradient(180deg,var(--s2),var(--s1));border:1px solid var(--line);border-radius:20px;padding:26px;min-width:0}
-.panel>*{animation:rise .6s backwards;animation-delay:calc(var(--i,0)*90ms)}
-@keyframes rise{from{opacity:0;transform:translateY(22px)}}
-.ph{border-bottom:2px solid;border-image:linear-gradient(90deg,var(--g),var(--r)) 1;padding-bottom:16px;margin-bottom:18px}
-.ph h2{font-size:clamp(2rem,5vw,3rem);margin:0;font-weight:800;line-height:1.1}
-.facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-.fact{background:#0a1418;border:1px solid var(--line);border-radius:10px;padding:8px 14px;line-height:1.3}
-.fact span{display:block;color:var(--mut);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase}
-.fact b{font-size:1.05rem}
-.about{color:#c3d3cc;margin:0 0 22px}
-.panel h3{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:1.1rem}
-.panel h3::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--r);box-shadow:0 0 12px var(--r)}
-.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.card{background:#0a1418;border:1px solid var(--line);border-radius:14px;overflow:hidden;animation:rise .6s backwards;animation-delay:calc(var(--c)*110ms + 300ms);cursor:pointer;transition:transform .35s,border-color .35s,box-shadow .35s}
-.card .im{aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,#123,#0a2a22)}
-.card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s}
-.card div:last-child{padding:12px 14px}
-.card h4{margin:0 0 4px;font-size:1.05rem}
-.card p{margin:0;color:var(--mut);font-size:.9rem;line-height:1.55}
-footer{text-align:center;color:var(--mut);font-size:.8rem;margin-top:40px}
-.stat{transition:transform .3s,border-color .3s}
-.stat:hover{transform:scale(1.07);border-color:var(--g)}
-.card:hover{transform:scale(1.05);border-color:var(--g);box-shadow:0 0 28px rgba(0,161,75,.3);z-index:2;position:relative}
-.vid{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 14px;border-radius:999px;background:var(--r);color:#fff;font-size:.8rem;font-weight:600;text-decoration:none;transition:transform .25s}
-.vid:hover{transform:scale(1.08)}
-.flagbox{display:flex;justify-content:center;align-items:flex-start}
-.pole{flex:none;width:7px;height:330px;margin-top:14px;border-radius:4px;background:linear-gradient(90deg,#7b8884,#f2f6f4 45%,#7b8884);position:relative}
-.pole::before{content:"";position:absolute;top:-9px;left:-2px;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3b0,#e9c46a)}
-#flag{max-width:calc(100% - 7px);height:auto;margin-top:13px}
-#map{width:100%;height:min(72vh,660px);min-height:440px;background:#04141a}
-.leaflet-container{font-family:Sora,system-ui,sans-serif}
-.ctrl{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:1000}
-.ctrl button{padding:8px 16px;font-size:.85rem}
-.ctrl button.on{background:var(--g);border-color:var(--g);box-shadow:0 0 18px rgba(0,161,75,.5)}
-.cm i{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--r);border:2px solid #fff;animation:pulse 2s infinite}
-.cm.on i{background:var(--g)}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,42,61,.7)}70%,100%{box-shadow:0 0 0 14px rgba(255,42,61,0)}}
-.cm span{position:absolute;left:12px;top:-11px;white-space:nowrap;font-weight:700;font-size:14px;color:#fff;text-shadow:0 0 4px #000,0 0 8px #000,0 0 12px #000}
-.lm i{position:absolute;left:-7px;top:-7px;width:14px;height:14px;border-radius:50%;background:#e9c46a;border:2px solid #fff;box-shadow:0 0 12px #e9c46a}
-.lmt{background:rgba(5,8,10,.92);color:#fff;border:1px solid #e9c46a;border-radius:8px;font-weight:600;font-size:12px;padding:4px 9px;box-shadow:none}
+.hero p{color:var(--mut);font-size:1.15rem;max-width:50ch;margin:0 0 28px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 28px;border-radius:999px;font-weight:600;text-decoration:none;color:#fff;background:var(--em);box-shadow:0 0 30px rgba(15,184,106,.4);transition:transform .3s,box-shadow .3s}
+.btn.alt{background:var(--card);border:1px solid var(--bd);box-shadow:none}
+.btn:hover{transform:scale(1.07)}
+.flagwrap{position:relative;display:grid;place-items:center;padding:10px}
+.flagwrap::before{content:"";position:absolute;inset:8% 4%;background:radial-gradient(closest-side,rgba(15,184,106,.35),rgba(255,59,78,.18) 60%,transparent);filter:blur(40px)}
+#flag{position:relative;width:100%;max-width:580px;height:auto;filter:drop-shadow(0 24px 30px rgba(0,0,0,.65))}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--bd);border-radius:24px;overflow:hidden;margin-bottom:90px}
+.stat{padding:26px 22px;text-align:center;border-right:1px solid var(--bd);transition:transform .35s,background .35s}
+.stat:last-child{border:0}
+.stat:hover{transform:scale(1.07);background:rgba(15,184,106,.12)}
+.stat b{display:block;font-size:clamp(1.6rem,3.4vw,2.6rem);font-weight:800;line-height:1.2}
+.stat small{color:var(--mut);letter-spacing:.14em;text-transform:uppercase;font-size:.78rem}
+.sh{margin-bottom:26px}
+.sh h2{font-size:clamp(2rem,4.5vw,3.2rem);margin:0 0 6px;font-weight:800;line-height:1.1}
+.sh p{margin:0;color:var(--mut)}
+.mapwrap{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 30px 80px rgba(0,0,0,.5);background:#0a1114}
+#map{width:100%;height:min(76vh,720px);min-height:480px;background:#0a1114}
+.picker{position:absolute;z-index:1000;left:16px;top:16px;bottom:16px;width:230px;display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:18px;background:rgba(7,9,12,.82);backdrop-filter:blur(14px);border:1px solid var(--bd);overflow-y:auto}
+.pk{display:flex;align-items:center;gap:12px;flex:1;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--ink);font:inherit;font-weight:500;cursor:pointer;text-align:left;transition:all .25s}
+.pk i{font-style:normal;font-size:.75rem;color:var(--gold);font-weight:600}
+.pk:hover{background:rgba(255,255,255,.08);transform:scale(1.05)}
+.pk.on{background:var(--em);box-shadow:0 0 22px rgba(15,184,106,.5)}
+.pk.on i{color:#fff}
+.ctrl{position:absolute;z-index:1000;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:999px;background:rgba(7,9,12,.82);backdrop-filter:blur(14px);border:1px solid var(--bd);white-space:nowrap;max-width:calc(100% - 20px);overflow-x:auto}
+.ctrl button,.ctrl a{padding:8px 16px;border-radius:999px;border:0;background:transparent;color:var(--ink);font:inherit;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;transition:all .25s}
+.ctrl button:hover,.ctrl a:hover{background:rgba(255,255,255,.12);transform:scale(1.07)}
+.ctrl button.on{background:var(--em)}
+#nt{position:absolute;inset:0;z-index:1500;display:grid;place-items:center;padding:30px;text-align:center;background:rgba(10,17,20,.94);color:var(--mut)}
+#nt[hidden]{display:none}
+.leaflet-container{font-family:Outfit,system-ui,sans-serif}
+.leaflet-control-zoom{border:0!important;margin:16px!important}
+.leaflet-control-zoom a{background:rgba(7,9,12,.85)!important;color:#fff!important;border:1px solid var(--bd)!important;width:40px!important;height:40px!important;line-height:38px!important;font-size:20px!important}
+.leaflet-control-attribution{background:rgba(7,9,12,.7)!important;color:#8fa099!important}
+.leaflet-control-attribution a{color:#b7c4be!important}
+.cm i{position:absolute;left:-7px;top:-7px;width:14px;height:14px;border-radius:50%;background:var(--ru);border:2px solid #fff;animation:pulse 2s infinite}
+.cm.on i{background:var(--em)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,59,78,.75)}70%,100%{box-shadow:0 0 0 16px rgba(255,59,78,0)}}
+.cm span{position:absolute;left:14px;top:-12px;white-space:nowrap;font-weight:700;font-size:15px;color:#fff;text-shadow:0 0 4px #000,0 0 8px #000,0 0 14px #000}
+.lm i{position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 0 14px var(--gold)}
+.lmt{background:rgba(7,9,12,.94);color:#fff;border:1px solid var(--gold);border-radius:10px;font:600 13px Outfit,sans-serif;padding:5px 10px;box-shadow:none}
 .lmt::before{display:none}
 #map.far .lmt{display:none}
-.leaflet-control-zoom a{background:#111b20!important;color:#fff!important;border-color:#1e2d33!important}
-.leaflet-control-attribution{background:rgba(5,8,10,.75)!important;color:#8aa097!important}
-.leaflet-control-attribution a{color:#b4c6be!important}
-#nt{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;background:rgba(4,20,26,.92);color:var(--mut);z-index:1001}
-#nt[hidden]{display:none}
-@media(max-width:920px){.hero,.main{grid-template-columns:1fr}.mapcol{position:static}.pole{height:240px}}
+#detail{padding:90px 0 40px}
+.dh{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-bottom:22px;margin-bottom:22px;border-bottom:2px solid;border-image:linear-gradient(90deg,var(--em),var(--ru),transparent) 1}
+.dh h2{font-size:clamp(2.4rem,6vw,4.4rem);margin:0;font-weight:800;line-height:1}
+.facts{display:flex;gap:10px;flex-wrap:wrap}
+.fact{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 18px;line-height:1.3;transition:transform .3s}
+.fact:hover{transform:scale(1.07)}
+.fact span{display:block;color:var(--mut);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+.fact b{font-size:1.1rem}
+.about{font-size:1.15rem;color:#d3ddd8;max-width:80ch;margin:0 0 34px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;overflow:hidden;cursor:pointer;animation:rise .6s backwards;animation-delay:calc(var(--c)*100ms);transition:transform .35s,border-color .35s,box-shadow .35s}
+.card:hover{transform:scale(1.06);border-color:var(--em);box-shadow:0 0 34px rgba(15,184,106,.3);position:relative;z-index:2}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}}
+.im{aspect-ratio:4/3;background:linear-gradient(135deg,#0d2a22,#13222b)}
+.im img{width:100%;height:100%;object-fit:cover;display:block}
+.cb{padding:16px 18px 18px}
+.cb h4{margin:0 0 6px;font-size:1.15rem;font-weight:600}
+.cb p{margin:0;color:var(--mut);font-size:.95rem;line-height:1.6}
+.vid{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 18px;border:0;border-radius:999px;background:var(--ru);color:#fff;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:transform .25s}
+.vid:hover{transform:scale(1.1)}
+#vm{position:fixed;inset:0;z-index:3000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);animation:fade .25s}
+#vm[hidden]{display:none}
+@keyframes fade{from{opacity:0}}
+.vb{position:relative;width:min(960px,100%);background:#0c1115;border:1px solid var(--bd);border-radius:22px;padding:18px;animation:pop .35s}
+@keyframes pop{from{transform:scale(.9);opacity:0}}
+.vb h4{margin:0 50px 12px 4px;font-size:1.2rem}
+.vf{aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;display:grid;place-items:center;text-align:center;color:var(--mut)}
+.vf iframe{width:100%;height:100%;border:0}
+.vx{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:1px solid var(--bd);background:var(--card);color:#fff;font-size:22px;cursor:pointer;transition:transform .25s,background .25s}
+.vx:hover{transform:scale(1.15);background:var(--ru)}
+.vy{display:inline-block;margin:12px 4px 0;color:var(--gold);text-decoration:none;font-weight:500}
+footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50px 20px;font-size:.9rem}
+@media(max-width:920px){.hero{grid-template-columns:1fr;min-height:0}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--bd)}.logo{height:52px}.top nav a{padding:8px 12px}.picker{position:static;width:auto;flex-direction:row;border-radius:0;border:0;border-bottom:1px solid var(--bd);overflow-x:auto;overflow-y:hidden}.pk{flex:none;min-height:42px;white-space:nowrap}#map{height:62vh;min-height:420px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
-<div class="wrap">
-<nav>
+<header class="top">
 <img class="logo" src="https://www.adbips.com/images/logo.png" alt="ADBIPS" referrerpolicy="no-referrer">
-<span>United Arab Emirates</span>
-</nav>
+<nav><a href="#explore">Map</a><a href="#detail">Landmarks</a></nav>
+</header>
+<main class="wrap">
 <section class="hero">
 <div>
-<h1>Seven Emirates.<br>One Nation.</h1>
-<p>Explore the United Arab Emirates on a live map. Scroll to zoom, drag to pan, and tap any emirate to discover its landmarks, heritage and history.</p>
-<div class="stats">
+<span class="tag">United Arab Emirates</span>
+<h1>Seven Emirates.<br><em>One Nation.</em></h1>
+<p>Fly across the UAE on a live map, then dive into each emirate's landmarks, heritage and stories, with photos and videos along the way.</p>
+<div class="btns"><a class="btn" href="#explore">Explore the map</a><a class="btn alt" href="#detail">See landmarks</a></div>
+</div>
+<div class="flagwrap"><canvas id="flag" width="560" height="316"></canvas></div>
+</section>
+<section class="stats">
 <div class="stat"><b data-n="7">0</b><small>Emirates</small></div>
-<div class="stat"><b data-n="1971">0</b><small>Founded</small></div>
+<div class="stat"><b data-n="1971" data-plain="1">0</b><small>Founded</small></div>
 <div class="stat"><b data-n="83600">0</b><small>Area km²</small></div>
 <div class="stat"><b>Abu Dhabi</b><small>Capital</small></div>
-</div>
-</div>
-<div class="flagbox"><div class="pole"></div><canvas id="flag" width="420" height="232"></canvas></div>
 </section>
-<section class="main">
-<div class="mapcol">
-<div class="mapbox" id="mapbox">
+<section id="explore">
+<div class="sh"><h2>Explore the map</h2><p>Scroll or pinch to zoom, drag to move, and pick an emirate to fly there.</p></div>
+<div class="mapwrap">
+<div class="picker" id="picker"></div>
 <div id="map" class="far"></div>
-<div class="ctrl"><button id="bm" class="on">Map</button><button id="bs">Satellite</button><button id="ba">All UAE</button></div>
+<div class="ctrl"><button data-m="dark" class="on">Dark</button><button data-m="street">Streets</button><button data-m="sat">Satellite</button><button id="ba">All UAE</button><a href="#detail">Landmarks &darr;</a></div>
 <div id="nt" hidden>Map tiles could not load. Check your internet connection, or host this file on a website (http or https) instead of opening it directly.</div>
 </div>
-<div class="chips" id="chips"></div>
-<p class="hint">Scroll or pinch to zoom, drag to move. Pick an emirate, or tap a landmark card to fly to it.</p>
-</div>
-<article class="panel" id="panel" aria-live="polite"></article>
 </section>
-<footer>United Arab Emirates · Founded 2 December 1971</footer>
-</div>
+<section id="detail"><div id="dbody" aria-live="polite"></div></section>
+</main>
+<footer>United Arab Emirates &middot; Founded 2 December 1971</footer>
+<div id="vm" hidden><div class="vb" role="dialog" aria-modal="true" aria-labelledby="vt"><button class="vx" id="vx" aria-label="Close">&times;</button><h4 id="vt"></h4><div class="vf" id="vf"></div><a class="vy" id="vy" target="_blank" rel="noopener">Open on YouTube &rarr;</a></div></div>
 <script>
-const P={
-ad:[[51.58,24.25],[51.7,24.1],[52.2,24.1],[52.7,24.15],[53.1,24.15],[53.45,24.1],[53.9,24.25],[54.25,24.4],[54.3,24.5],[54.45,24.53],[54.55,24.45],[54.65,24.6],[54.7,24.78],[54.95,24.9],[55.2,24.78],[55.45,24.78],[55.62,24.95],[55.8,24.7],[56.0,24.25],[55.77,24.05],[55.7,23.7],[55.45,23.2],[55.25,22.9],[55.2,22.63],[52.6,22.95]],
-dxb:[[54.95,24.9],[55.04,25.0],[55.17,25.12],[55.27,25.28],[55.36,25.31],[55.55,25.2],[55.62,24.95],[55.45,24.78],[55.2,24.78]],
-hat:[[56.02,24.82],[56.18,24.88],[56.25,24.78],[56.12,24.7],[56.0,24.72]],
-shj:[[55.36,25.31],[55.43,25.375],[55.5,25.35],[55.55,25.4],[55.7,25.45],[55.9,25.45],[56.0,25.3],[55.9,25.1],[55.75,25.0],[55.62,24.95],[55.55,25.2]],
-sk1:[[56.3,25.28],[56.38,25.3],[56.36,25.4],[56.28,25.38]],
-sk2:[[56.3,25.0],[56.37,25.08],[56.35,25.12],[56.26,25.06]],
-ajm:[[55.43,25.375],[55.5,25.44],[55.55,25.4],[55.5,25.35]],
-uaq:[[55.5,25.44],[55.55,25.4],[55.7,25.45],[55.75,25.55],[55.6,25.62]],
-rak:[[55.6,25.62],[55.75,25.55],[55.9,25.5],[56.05,25.55],[56.08,25.8],[56.06,25.96],[55.95,25.82],[55.8,25.78]],
-fuj:[[56.25,25.6],[56.36,25.55],[56.36,25.4],[56.37,25.2],[56.36,25.03],[56.2,25.04],[56.17,25.28],[56.17,25.45],[56.22,25.55]]
-};
-const GROUP={ad:['ad'],dxb:['dxb','hat'],shj:['shj','sk1','sk2'],ajm:['ajm'],uaq:['uaq'],rak:['rak'],fuj:['fuj']};
 const E=[
 {id:'ad',n:'Abu Dhabi',cap:'Abu Dhabi City',area:'67,340 km²',yr:'2 Dec 1971',c:[24.47,54.37],lb:[24.0,54.0],t:'The capital and largest emirate, covering about 87% of the country, from Gulf islands to the dunes of the Empty Quarter and the oasis city of Al Ain.',L:[['Sheikh Zayed Grand Mosque','ad-mosque','Opened in 2007, it holds over 40,000 worshippers and features one of the largest hand-knotted carpets in the world.'],['Qasr Al Hosn','ad-hosn','Began as an 18th-century watchtower guarding a freshwater well, and grew into the seat of government.'],['Louvre Abu Dhabi','ad-louvre','A museum on Saadiyat Island under a lattice dome that filters light into a rain of stars. Opened in 2017.'],['Al Ain Oasis','ad-oasis','Date palm groves watered by ancient falaj channels, a UNESCO World Heritage site since 2011.']]},
 {id:'dxb',n:'Dubai',cap:'Dubai City',area:'4,114 km²',yr:'2 Dec 1971',c:[25.2,55.27],lb:[24.85,55.3],t:'The nation\'s hub of trade and tourism, born around Dubai Creek where wooden dhows once carried goods between the Gulf, India and East Africa.',L:[['Burj Khalifa','dxb-burj','The tallest building in the world at 828 metres, opened in 2010.'],['Dubai Creek','dxb-creek','The waterway the city grew from, still busy with abras and traditional trading dhows.'],['Al Fahidi Historic District','dxb-fahidi','Coral stone and gypsum houses with narrow lanes and wind towers that cooled homes before electricity.'],['Hatta','dxb-hatta','A mountain enclave near the Omani border with a dam, kayaking and a heritage village.']]},
@@ -149,56 +155,78 @@ const IMGDATA={"ad-hosn": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2w
 const LL={'ad-mosque':[24.4128,54.475],'ad-hosn':[24.4825,54.3533],'ad-louvre':[24.5336,54.3985],'ad-oasis':[24.225,55.77],'dxb-burj':[25.1972,55.2744],'dxb-creek':[25.2285,55.335],'dxb-fahidi':[25.2637,55.2972],'dxb-hatta':[24.8085,56.1168],'shj-book':[25.3153,55.3924],'shj-noor':[25.351,55.3718],'shj-heart':[25.3593,55.3855],'shj-mleiha':[25.1028,55.8643],'ajm-museum':[25.4105,55.441],'ajm-dhow':[25.413,55.448],'ajm-zorah':[25.4352,55.4955],'uaq-fort':[25.566,55.553],'uaq-siniyah':[25.6,55.65],'uaq-dour':[25.57,55.68],'rak-jais':[25.953,56.143],'rak-dhayah':[25.79,55.95],'rak-hamra':[25.699,55.79],'fuj-bidya':[25.4423,56.3578],'fuj-fort':[25.1244,56.3484],'fuj-wadi':[25.185,56.21],'fuj-snoopy':[25.517,56.368]};
 const V={ad:[[24.45,54.5],9],dxb:[[25.2,55.3],10],shj:[[25.35,55.55],10],ajm:[[25.41,55.46],12],uaq:[[25.56,55.6],11],rak:[[25.8,56.0],10],fuj:[[25.2,56.3],10]};
 const ALL=[[24.4,54.0],7];
+const VIDEOS={'ad-mosque':'DuxXwHwUTXo'};
 const el=document.getElementById('map');
 const map=L.map(el,{zoomControl:false,center:ALL[0],zoom:ALL[1],minZoom:6,maxZoom:18});
 L.control.zoom({position:'topright'}).addTo(map);
-const dark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
-const sat=L.layerGroup([L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Esri'}),L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19})]);
-const alt=L.layerGroup([L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:19,attribution:'Esri'}),L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:19})]);
-let bad=0,fell=false;
+const T=(p,n)=>L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/'+p+'/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:n,maxZoom:18,attribution:'Tiles &copy; Esri'});
+const MODES={dark:L.layerGroup([T('Canvas/World_Dark_Gray_Base',16),T('Canvas/World_Dark_Gray_Reference',16)]),street:L.layerGroup([T('World_Street_Map',19)]),sat:L.layerGroup([T('World_Imagery',19),T('Reference/World_Boundaries_and_Places',19)])};
 const nt=document.getElementById('nt');
-const fail=()=>{if(++bad<5)return;if(!fell){fell=true;bad=0;map.removeLayer(dark);alt.addTo(map)}else nt.hidden=false};
-dark.on('tileerror',fail);
-alt.eachLayer(l=>{l.on('tileerror',fail);l.on('tileload',()=>{bad=0;nt.hidden=true})});
-dark.on('tileload',()=>{bad=0;nt.hidden=true});
-const bm=document.getElementById('bm'),bs=document.getElementById('bs');
-bm.onclick=()=>{map.removeLayer(sat);(fell?alt:dark).addTo(map);bm.classList.add('on');bs.classList.remove('on')};
-bs.onclick=()=>{map.removeLayer(dark);map.removeLayer(alt);sat.addTo(map);bs.classList.add('on');bm.classList.remove('on')};
+let bad=0,mode='dark';
+Object.values(MODES).forEach(g=>g.eachLayer(l=>{l.on('tileerror',()=>{if(++bad>8)nt.hidden=false});l.on('tileload',()=>{bad=0;nt.hidden=true})}));
+MODES.dark.addTo(map);
+function setMode(m){map.removeLayer(MODES[mode]);mode=m;MODES[m].addTo(map);document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m))}
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 const fz=()=>el.classList.toggle('far',map.getZoom()<11);
 map.on('zoomend',fz);fz();
 const lg=L.layerGroup().addTo(map),cm={};
 const fly=(c,z)=>map.flyTo(c,z,{duration:1.6});
 E.forEach(e=>{const m=L.marker(e.c,{icon:L.divIcon({className:'cm',html:'<i></i><span>'+e.n+'</span>',iconSize:[0,0]})}).addTo(map);m.on('click',()=>pick(e.id,true));cm[e.id]=m});
-document.getElementById('ba').onclick=()=>{document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));Object.values(cm).forEach(m=>m.getElement().classList.remove('on'));lg.clearLayers();fly(ALL[0],ALL[1])};
-const chips=document.getElementById('chips');
-E.forEach(e=>{const b=document.createElement('button');b.className='chip';b.id='c-'+e.id;b.textContent=e.n;b.onclick=()=>pick(e.id,true);chips.appendChild(b)});
-const panel=document.getElementById('panel');
-const yt=n=>'https://www.youtube.com/results?search_query='+encodeURIComponent(n+' UAE');
+const picker=document.getElementById('picker');
+E.forEach((e,i)=>{const b=document.createElement('button');b.className='pk';b.id='c-'+e.id;b.innerHTML='<i>0'+(i+1)+'</i><span>'+e.n+'</span>';b.onclick=()=>pick(e.id,true);picker.appendChild(b)});
+document.getElementById('ba').onclick=()=>{document.querySelectorAll('.pk').forEach(c=>c.classList.remove('on'));Object.values(cm).forEach(m=>m.getElement().classList.remove('on'));lg.clearLayers();fly(ALL[0],ALL[1])};
+const dbody=document.getElementById('dbody');
+const vm=document.getElementById('vm'),vf=document.getElementById('vf');
+function openVideo(k,n){
+document.getElementById('vt').textContent=n;
+document.getElementById('vy').href='https://www.youtube.com/results?search_query='+encodeURIComponent(n+' UAE');
+vf.innerHTML=VIDEOS[k]?'<iframe src="https://www.youtube.com/embed/'+VIDEOS[k]+'?autoplay=1&rel=0" title="'+n+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>':'<div style="padding:24px">No video has been added for this landmark yet.<br>Use the link below to find one on YouTube.</div>';
+vm.hidden=false}
+function closeVideo(){vm.hidden=true;vf.innerHTML=''}
+document.getElementById('vx').onclick=closeVideo;
+vm.onclick=ev=>{if(ev.target===vm)closeVideo()};
+addEventListener('keydown',ev=>{if(ev.key==='Escape')closeVideo()});
 function render(e){
-panel.innerHTML=`<div class="ph" style="--i:0"><h2>${e.n}</h2><div class="facts"><div class="fact"><span>Area</span><b>${e.area}</b></div><div class="fact"><span>Capital</span><b>${e.cap}</b></div><div class="fact"><span>Joined the Union</span><b>${e.yr}</b></div></div></div><p class="about" style="--i:1">${e.t}</p><section style="--i:2"><h3>Landmarks</h3><div class="gal">${e.L.map(([n,k,d],i)=>`<div class="card" data-k="${k}" style="--c:${i}"><div class="im">${IMGDATA[k]?`<img src="${IMGDATA[k]}" alt="${n}" loading="lazy">`:''}</div><div><h4>${n}</h4><p>${d}</p><a class="vid" href="${yt(n)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">&#9654; Watch video</a></div></div>`).join('')}</div></section>`;
-panel.querySelectorAll('.card').forEach(c=>c.onclick=()=>{fly(LL[c.dataset.k],15);if(innerWidth<920)document.getElementById('mapbox').scrollIntoView({behavior:'smooth',block:'center'})})}
+dbody.innerHTML=`<div class="dh"><h2>${e.n}</h2><div class="facts"><div class="fact"><span>Area</span><b>${e.area}</b></div><div class="fact"><span>Capital</span><b>${e.cap}</b></div><div class="fact"><span>Joined the Union</span><b>${e.yr}</b></div></div></div><p class="about">${e.t}</p><div class="gal">${e.L.map(([n,k,d],i)=>`<div class="card" data-k="${k}" style="--c:${i}"><div class="im">${IMGDATA[k]?`<img src="${IMGDATA[k]}" alt="${n}" loading="lazy">`:''}</div><div class="cb"><h4>${n}</h4><p>${d}</p><button class="vid" data-k="${k}" data-n="${n}">&#9654; Watch video</button></div></div>`).join('')}</div>`;
+dbody.querySelectorAll('.card').forEach(c=>c.onclick=()=>{fly(LL[c.dataset.k],15);document.getElementById('explore').scrollIntoView({behavior:'smooth'})});
+dbody.querySelectorAll('.vid').forEach(b=>b.onclick=ev=>{ev.stopPropagation();openVideo(b.dataset.k,b.dataset.n)})}
 function pick(id,go){
 E.forEach(e=>{document.getElementById('c-'+e.id).classList.toggle('on',e.id===id);const n=cm[e.id].getElement();if(n)n.classList.toggle('on',e.id===id)});
 render(byId[id]);
 lg.clearLayers();
 byId[id].L.forEach(([n,k])=>L.marker(LL[k],{icon:L.divIcon({className:'lm',html:'<i></i>',iconSize:[0,0]})}).on('click',()=>fly(LL[k],15)).bindTooltip(n,{permanent:true,direction:'right',offset:[12,0],className:'lmt'}).addTo(lg));
-if(go){fly(V[id][0],V[id][1]);if(innerWidth<920)document.getElementById('mapbox').scrollIntoView({behavior:'smooth',block:'center'})}}
+if(go)fly(V[id][0],V[id][1])}
 pick('ad',false);
 const fl=document.getElementById('flag'),fx=fl.getContext('2d');
-const fo=document.createElement('canvas');fo.width=420;fo.height=210;const fc=fo.getContext('2d');
-fc.fillStyle='#00732f';fc.fillRect(0,0,420,70);fc.fillStyle='#fff';fc.fillRect(0,70,420,70);fc.fillStyle='#000';fc.fillRect(0,140,420,70);fc.fillStyle='#ff0000';fc.fillRect(0,0,105,210);
+const W=560,H=280,PD=18;
+const fo=document.createElement('canvas');fo.width=W;fo.height=H;
+const fc=fo.getContext('2d');
+fc.fillStyle='#00732f';fc.fillRect(0,0,W,H/3+1);
+fc.fillStyle='#ffffff';fc.fillRect(0,H/3,W,H/3+1);
+fc.fillStyle='#000000';fc.fillRect(0,2*H/3,W,H/3+1);
+fc.fillStyle='#ff0000';fc.fillRect(0,0,W/4,H);
+const fb=document.createElement('canvas');fb.width=W;fb.height=H+2*PD;
+const bx=fb.getContext('2d');
 const st=document.getElementById('stars'),sx=st.getContext('2d');
 let S=[];
 function rs(){st.width=innerWidth;st.height=innerHeight;S=Array.from({length:Math.round(innerWidth*innerHeight/9000)},()=>({x:Math.random()*st.width,y:Math.random()*st.height,r:Math.random()*1.3+.2,p:Math.random()*6,v:Math.random()*.02+.005}))}
 rs();addEventListener('resize',rs);
-function loop(ms){const t=ms/1000;
-fx.clearRect(0,0,420,232);
-for(let x=0;x<420;x++){const q=x/420,ph=x*.03-t*2.4,dy=9*Math.pow(q,1.1)*Math.sin(ph)+11,sh=Math.cos(ph)*.16*q;fx.drawImage(fo,x,0,1,210,x,dy,1,210);if(sh){fx.fillStyle=sh>0?`rgba(255,255,255,${sh})`:`rgba(0,0,0,${-sh*1.4})`;fx.fillRect(x,dy,1,210)}}
+function loop(ms){
+const t=ms/1000;
+bx.clearRect(0,0,W,H+2*PD);
+for(let x=0;x<W;x++){
+const q=x/W,ph=x*.022-t*2.6,amp=PD*.7*(.25+.75*q),dy=PD+amp*Math.sin(ph),sy=1+.05*q*Math.cos(ph),h=H*sy,sh=Math.cos(ph)*.2*(.3+q);
+bx.drawImage(fo,x,0,1,H,x,dy-(h-H)/2,1,h);
+bx.fillStyle=sh>0?'rgba(255,255,255,'+sh*.6+')':'rgba(0,0,0,'+(-sh*1.2)+')';
+bx.fillRect(x,dy-(h-H)/2,1,h)}
+fx.clearRect(0,0,W,fl.height);
+for(let y=0;y<H+2*PD;y++){const dx=5*Math.sin(y*.03+t*2.1)*(x0(y));fx.drawImage(fb,0,y,W,1,dx,y,W,1)}
 sx.clearRect(0,0,st.width,st.height);
 S.forEach(s=>{s.p+=s.v;sx.globalAlpha=.25+.75*Math.abs(Math.sin(s.p));sx.fillStyle='#cfe';sx.beginPath();sx.arc(s.x,s.y,s.r,0,6.3);sx.fill()});
 requestAnimationFrame(loop)}
+function x0(y){return .4+.6*Math.abs(Math.sin(y*.012))}
 requestAnimationFrame(loop);
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const el=e.target,n=+el.dataset.n,t0=performance.now();const s=m=>{const p=Math.min(1,(m-t0)/1600);el.textContent=Math.round(n*(1-Math.pow(1-p,3))).toLocaleString('en-US').replace(/,(?=\d{3}$)/,n===1971?'':',');if(p<1)requestAnimationFrame(s)};requestAnimationFrame(s)}));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const n=+e.target.dataset.n,plain=e.target.dataset.plain,t0=performance.now();const s=m=>{const p=Math.min(1,(m-t0)/1600),v=Math.round(n*(1-Math.pow(1-p,3)));e.target.textContent=plain?v:v.toLocaleString('en-US');if(p<1)requestAnimationFrame(s)};requestAnimationFrame(s)}));
 document.querySelectorAll('[data-n]').forEach(e=>io.observe(e));
 </script>
 </body>
