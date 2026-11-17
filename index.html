@@ -110,6 +110,17 @@ body{margin:0;background:radial-gradient(900px 500px at 85% -5%,rgba(15,184,106,
 .vid:hover{transform:scale(1.1)}
 #vm{position:fixed;inset:0;z-index:3000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);animation:fade .25s}
 #vm[hidden]{display:none}
+#svm{position:fixed;inset:0;z-index:3100;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.86);backdrop-filter:blur(9px);animation:fade .25s}
+#svm[hidden]{display:none}
+.svb{position:relative;width:min(1440px,100%);height:min(92vh,920px);display:flex;flex-direction:column;gap:12px;background:#0c1115;border:1px solid var(--bd);border-radius:22px;padding:18px;box-shadow:0 30px 90px rgba(0,0,0,.65);animation:pop .3s}
+.svhead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 50px 0 4px;min-height:44px}
+.svhead h4{margin:0;font-size:1.2rem;line-height:1.25}
+.svhead p{margin:3px 0 0;color:var(--mut);font-size:.9rem;line-height:1.35}
+.svhead a{flex:none;color:var(--gold);font-size:.9rem;text-decoration:none}
+.svframe{position:relative;flex:1;min-height:240px;border-radius:14px;overflow:hidden;background:#050709}
+.svframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.svloading{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--mut);background:linear-gradient(135deg,#080d10,#10191d);line-height:1.5}
+.svloading b{display:block;color:var(--ink);font-size:1.05rem;margin-bottom:6px}
 @keyframes fade{from{opacity:0}}
 @keyframes pop{from{transform:scale(.9);opacity:0}}
 .vb h4{margin:0 50px 12px 4px;font-size:1.2rem}
@@ -176,13 +187,12 @@ footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50
 <div class="stat"><b>Abu Dhabi</b><small>Capital</small></div>
 </section>
 <section id="explore">
-<div class="sh"><h2>Explore the map</h2><p>Switch between the 2D map, 3D terrain, and ground-level 360° Street View. In Street View, drag to look around and use the arrows to move along covered routes.</p></div>
+<div class="sh"><h2>Explore the map</h2><p>Switch between the 2D map and 3D terrain, or open a ground-level 360° Street View popup for the selected location. Drag to look around and use the arrows to move along covered routes.</p></div>
 <div class="mapwrap">
 <div class="pwrap"><div class="picker" id="picker"></div></div>
 <div id="map" class="far"></div>
 <div id="map3d" aria-label="Interactive 3D terrain map"></div>
-<div id="streetview" aria-label="360 degree ground-level Street View"><div id="streetviewpanorama"></div><div id="streetviewmessage" class="sv-message"><b>360° Street View</b><p>Choose a landmark or emirate, then switch to this view. Add a Google Maps JavaScript API key in the page script to load the 360° imagery. <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank" rel="noopener">Get a Maps API key ↗</a></p></div></div>
-<div class="ctrl"><button data-view="2d" class="on" aria-pressed="true">2D Map</button><button data-view="3d" aria-pressed="false">3D Terrain</button><button data-view="streetview" aria-pressed="false" title="Explore this area in 360° ground-level imagery">360° Street View</button><span class="ctrlsep" aria-hidden="true"></span><button data-m="dark" class="on">Dark</button><button data-m="street">Streets</button><button data-m="sat">Satellite</button><button id="ba">All UAE</button><a href="#detail">Landmarks &darr;</a></div>
+<div class="ctrl"><button data-view="2d" class="on" aria-pressed="true">2D Map</button><button data-view="3d" aria-pressed="false">3D Terrain</button><button id="streetview-open" type="button" title="Open this location in a 360° Street View popup">360° Street View</button><span class="ctrlsep" aria-hidden="true"></span><button data-m="dark" class="on">Dark</button><button data-m="street">Streets</button><button data-m="sat">Satellite</button><button id="ba">All UAE</button><a href="#detail">Landmarks &darr;</a></div>
 <div id="nt" hidden>Map tiles could not load. Check your internet connection, or host this file on a website (http or https) instead of opening it directly.</div>
 </div>
 </section>
@@ -192,6 +202,11 @@ footer{position:relative;z-index:1;text-align:center;color:var(--mut);padding:50
 <div id="vm" hidden><div class="vb" role="dialog" aria-modal="true" aria-labelledby="vt"><button class="vx" id="vx" aria-label="Close">&times;</button><h4 id="vt"></h4>
 <div class="vlay"><div><div class="vf" id="vf"></div><a class="vy" id="vy" target="_blank" rel="noopener">Open on YouTube &rarr;</a></div>
 <div><form class="vs" id="vs"><input id="vq" type="search" placeholder="Search YouTube" autocomplete="off"><button type="submit">Search</button></form><div class="vr" id="vr"></div></div></div></div></div>
+<div id="svm" hidden><div class="svb" role="dialog" aria-modal="true" aria-labelledby="svtitle">
+<button class="vx" id="svx" aria-label="Close Street View">&times;</button>
+<div class="svhead"><div><h4 id="svtitle">360° Street View</h4><p id="svstatus">Choose a location to load its panorama.</p></div><a id="svopen" href="https://www.google.com/maps" target="_blank" rel="noopener">Open in Google Maps ↗</a></div>
+<div class="svframe" id="svframe"><div class="svloading"><div><b>360° Street View</b>Choose a landmark or emirate, then open this viewer.</div></div></div>
+</div></div>
 <script>
 const E=[
 {id:'ad',n:'Abu Dhabi',cap:'Abu Dhabi City',area:'67,340 km²',yr:'2 Dec 1971',c:[24.47,54.37],lb:[24.0,54.0],t:'The capital and largest emirate, covering about 87% of the country, from Gulf islands to the dunes of the Empty Quarter and the oasis city of Al Ain.',L:[['Sheikh Zayed Grand Mosque','ad-mosque','Opened in 2007, it holds over 40,000 worshippers and features one of the largest hand-knotted carpets in the world.'],['Qasr Al Hosn','ad-hosn','Began as an 18th-century watchtower guarding a freshwater well, and grew into the seat of government.'],['Louvre Abu Dhabi','ad-louvre','A museum on Saadiyat Island under a lattice dome that filters light into a rain of stars. Opened in 2017.'],['Al Ain Oasis','ad-oasis','Date palm groves watered by ancient falaj channels, a UNESCO World Heritage site since 2011.']]},
@@ -222,63 +237,99 @@ function setMode(m){map.removeLayer(MODES[mode]);mode=m;MODES[m].addTo(map);docu
 document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 let viewMode='2d';
 let activeStreetTarget={coords:[24.45,54.5],name:'Abu Dhabi'};
-let streetView=null,streetViewService=null,googleMapsLoadPromise=null,streetViewRequest=0;
-// Add your own restricted Google Maps JavaScript API key here. This is separate from the YouTube API key.
-const GOOGLE_MAPS_API_KEY='PASTE_YOUR_GOOGLE_MAPS_API_KEY_HERE';
-function setStreetViewMessage(html,show=true){const box=document.getElementById('streetviewmessage');if(!box)return;box.innerHTML=html;box.hidden=!show}
-function loadGoogleMaps(){
- if(window.google&&window.google.maps&&window.google.maps.importLibrary)return Promise.resolve();
- if(!GOOGLE_MAPS_API_KEY||GOOGLE_MAPS_API_KEY.includes('PASTE_YOUR_'))return Promise.reject(new Error('Add a Google Maps JavaScript API key to GOOGLE_MAPS_API_KEY in the page script.'));
- if(googleMapsLoadPromise)return googleMapsLoadPromise;
- googleMapsLoadPromise=new Promise((resolve,reject)=>{
-  const callbackName='__uaeStreetViewMapsReady';
-  window[callbackName]=()=>{delete window[callbackName];resolve()};
-  const script=document.createElement('script');
-  script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(GOOGLE_MAPS_API_KEY)+'&v=weekly&loading=async&callback='+callbackName;
-  script.async=true;script.defer=true;
-  script.onerror=()=>{googleMapsLoadPromise=null;delete window[callbackName];reject(new Error('Google Maps could not load. Check your API key, Maps JavaScript API setting, billing, and website restrictions.'))};
+let streetViewRequest=0,streetViewCallbackCount=0;
+const streetViewPanoCache=new Map();
+const streetViewModal=document.getElementById('svm');
+const streetViewFrame=document.getElementById('svframe');
+const streetViewStatus=document.getElementById('svstatus');
+const streetViewTitle=document.getElementById('svtitle');
+const streetViewOpenLink=document.getElementById('svopen');
+function setStreetViewStatus(message){streetViewStatus.textContent=message}
+function googleStreetViewUrl(coords){return 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+encodeURIComponent(coords[0]+','+coords[1])}
+function findKeylessStreetViewPano(coords,radius=500){
+ const lat=Number(coords[0]),lng=Number(coords[1]);
+ if(!Number.isFinite(lat)||!Number.isFinite(lng))return Promise.reject(new Error('This location does not have valid map coordinates.'));
+ const pb='!1m5!1sapiv3!5sAE!11m2!1m1!1b0!2m4!1m2!3d'+lat+'!4d'+lng+'!2d'+radius+'!3m10!2m2!1sen!2sAE!9m1!1e2!11m4!1m3!1e2!2b1!3e2!4m10!1e1!1e2!1e3!1e4!1e8!1e6!5m1!1e2!6m1!1e2';
+ const callbackName='__uaeStreetViewPano_'+(++streetViewCallbackCount);
+ const script=document.createElement('script');
+ let timeoutId;
+ return new Promise((resolve,reject)=>{
+  let settled=false;
+  const finish=(err,value)=>{
+   if(settled)return;settled=true;clearTimeout(timeoutId);script.remove();delete window[callbackName];
+   if(err)reject(err);else resolve(value);
+  };
+  window[callbackName]=(data)=>{
+   try{
+    // The lookup response is an undocumented Google endpoint; use its nearest returned panorama.
+    const raw=data&&data[1]&&data[1][5]&&data[1][5][0]&&data[1][5][0][3]&&data[1][5][0][3][0];
+    if(!Array.isArray(raw)||!raw.length)throw new Error('No 360° Street View panorama was found near this location. Try another landmark or a nearby point.');
+    const candidates=raw.map(item=>{
+     const position=item&&item[2]&&item[2][0];
+     const camera=item&&item[2]&&item[2][2];
+     return {panoId:item&&item[0]&&item[0][1],lat:Number(position&&position[2]),lng:Number(position&&position[3]),heading:Number(camera&&camera[0]||0)};
+    }).filter(item=>item.panoId&&Number.isFinite(item.lat)&&Number.isFinite(item.lng));
+    if(!candidates.length)throw new Error('Google returned no usable panorama for this location.');
+    candidates.sort((a,b)=>Math.hypot(a.lat-lat,a.lng-lng)-Math.hypot(b.lat-lat,b.lng-lng));
+    finish(null,candidates[0]);
+   }catch(err){finish(err)}
+  };
+  script.onerror=()=>finish(new Error('Google Street View could not be reached. Check your internet connection and try again.'));
+  timeoutId=setTimeout(()=>finish(new Error('The Street View lookup timed out. Please try again.')),15000);
+  script.async=true;
+  script.src='https://maps.googleapis.com/maps/api/js/GeoPhotoService.SingleImageSearch?pb='+encodeURIComponent(pb)+'&callback='+callbackName;
   document.head.appendChild(script);
  });
- return googleMapsLoadPromise;
 }
-async function openStreetViewAt(coords,name){
- activeStreetTarget={coords,name:name||'Selected location'};
- if(viewMode!=='streetview')return;
+function openStreetViewPopup(coords,name){
+ const target=[Number(coords[0]),Number(coords[1])];
+ activeStreetTarget={coords:target,name:name||'Selected location'};
  const requestId=++streetViewRequest;
- setStreetViewMessage('<b>Loading 360° Street View…</b><p>Looking for nearby panoramic imagery around '+(name||'this location')+'.</p>');
- try{
-  await loadGoogleMaps();
-  const lib=await google.maps.importLibrary('streetView');
+ streetViewModal.hidden=false;
+ streetViewTitle.textContent='360° Street View — '+activeStreetTarget.name;
+ setStreetViewStatus('Searching for a nearby 360° panorama…');
+ streetViewOpenLink.href=googleStreetViewUrl(target);
+ streetViewFrame.innerHTML='<div class="svloading"><div><b>Finding 360° imagery…</b>Checking for the nearest available Street View panorama.</div></div>';
+ const cacheKey=target.map(v=>v.toFixed(5)).join(',');
+ const lookup=streetViewPanoCache.has(cacheKey)?Promise.resolve(streetViewPanoCache.get(cacheKey)):findKeylessStreetViewPano(target);
+ lookup.then(pano=>{
   if(requestId!==streetViewRequest)return;
-  if(!streetViewService)streetViewService=new lib.StreetViewService();
-  if(!streetView)streetView=new lib.StreetViewPanorama(document.getElementById('streetviewpanorama'),{
-   pov:{heading:0,pitch:0},zoom:0,visible:false,addressControl:true,linksControl:true,
-   panControl:true,zoomControl:true,fullscreenControl:true,clickToGo:true,
-   motionTracking:false,motionTrackingControl:false,enableCloseButton:false
-  });
-  const lat=Number(coords[0]),lng=Number(coords[1]);
-  const response=await streetViewService.getPanorama({location:{lat,lng},radius:1500});
+  streetViewPanoCache.set(cacheKey,pano);
+  const pb='!4v1!6m8!1m7!1s'+pano.panoId+'!2m2!1d'+pano.lat+'!2d'+pano.lng+'!3f'+pano.heading+'!4f0!5f0.7820865974627469';
+  const iframe=document.createElement('iframe');
+  iframe.title='Interactive 360 degree Street View panorama of '+activeStreetTarget.name;
+  iframe.loading='eager';
+  iframe.referrerPolicy='no-referrer-when-downgrade';
+  iframe.allow='accelerometer; gyroscope; fullscreen';
+  iframe.allowFullscreen=true;
+  iframe.src='https://www.google.com/maps/embed?pb='+pb;
+  streetViewFrame.replaceChildren(iframe);
+  setStreetViewStatus('Panorama found. Drag to look around; use the on-screen arrows to move along covered streets.');
+ }).catch(err=>{
   if(requestId!==streetViewRequest)return;
-  if(!response||!response.data||!response.data.location)throw new Error('No Street View panorama was found within 1.5 km of this location. Try another nearby landmark or emirate.');
-  streetView.setPano(response.data.location.pano);
-  const pov=response.data.location.pov||{heading:0,pitch:0};
-  streetView.setPov({heading:pov.heading||0,pitch:0});
-  streetView.setVisible(true);
-  setStreetViewMessage('',false);
-  requestAnimationFrame(()=>{if(window.google&&google.maps&&google.maps.event)google.maps.event.trigger(streetView,'resize')});
- }catch(err){
-  if(requestId!==streetViewRequest)return;
-  const mapsUrl='https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+encodeURIComponent(coords[0]+','+coords[1]);
-  setStreetViewMessage('<b>Street View is not ready here</b><p>'+String(err.message||err).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))+'</p><p><a target="_blank" rel="noopener" href="'+mapsUrl+'">Try this location in Google Maps Street View ↗</a></p>');
- }
+  const msg=document.createElement('div');msg.className='svloading';
+  const content=document.createElement('div');
+  const heading=document.createElement('b');heading.textContent='Street View is unavailable here';
+  const details=document.createElement('span');details.textContent=err&&err.message?err.message:'No panorama was found.';
+  content.append(heading,details);msg.replaceChildren(content);streetViewFrame.replaceChildren(msg);
+  setStreetViewStatus('No panorama could be loaded in the popup.');
+ });
 }
-function openStreetViewForCurrentTarget(){openStreetViewAt(activeStreetTarget.coords,activeStreetTarget.name)}
-function setView(v){const previous=viewMode;viewMode=v;const wrap=document.querySelector('.mapwrap');wrap.classList.toggle('is-3d',v==='3d');wrap.classList.toggle('is-streetview',v==='streetview');document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===v;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active))});if(v==='3d'){if(window.start3DMap)window.start3DMap()}else if(v==='streetview'){openStreetViewForCurrentTarget()}else{if(previous==='3d'&&window.sync3DTo2D)window.sync3DTo2D();requestAnimationFrame(()=>map.invalidateSize())}}
+function closeStreetViewPopup(){
+ streetViewRequest++;
+ streetViewModal.hidden=true;
+ streetViewFrame.replaceChildren();
+}
+function openStreetViewForCurrentTarget(){openStreetViewPopup(activeStreetTarget.coords,activeStreetTarget.name)}
+function setView(v){const previous=viewMode;viewMode=v;const wrap=document.querySelector('.mapwrap');wrap.classList.toggle('is-3d',v==='3d');document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===v;b.classList.toggle('on',active);b.setAttribute('aria-pressed',String(active))});if(v==='3d'){if(window.start3DMap)window.start3DMap()}else{if(previous==='3d'&&window.sync3DTo2D)window.sync3DTo2D();requestAnimationFrame(()=>map.invalidateSize())}}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.getElementById('streetview-open').onclick=openStreetViewForCurrentTarget;
+document.getElementById('svx').onclick=closeStreetViewPopup;
+streetViewModal.onclick=ev=>{if(ev.target===streetViewModal)closeStreetViewPopup()};
 const fz=()=>el.classList.toggle('far',map.getZoom()<11);
 map.on('zoomend',fz);fz();
 const lg=L.layerGroup().addTo(map),cm={};
-const fly=(c,z,name)=>{activeStreetTarget={coords:[Number(c[0]),Number(c[1])],name:name||'Selected location'};map.flyTo(c,z,{duration:1.6});if(window.fly3DTo)window.fly3DTo(c,z);if(viewMode==='streetview')openStreetViewAt(c,name||'Selected location')};
+const fly=(c,z,name)=>{activeStreetTarget={coords:[Number(c[0]),Number(c[1])],name:name||'Selected location'};map.flyTo(c,z,{duration:1.6});if(window.fly3DTo)window.fly3DTo(c,z)};
 E.forEach(e=>{const m=L.marker(e.c,{icon:L.divIcon({className:'cm',html:'<i></i><span>'+e.n+'</span>',iconSize:[0,0]})}).addTo(map);m.on('click',()=>pick(e.id,true));cm[e.id]=m});
 const picker=document.getElementById('picker');
 E.forEach(e=>{const b=document.createElement('button');b.className='pk';b.id='c-'+e.id;b.textContent=e.n;b.onclick=()=>pick(e.id,true);picker.appendChild(b)});
@@ -318,7 +369,7 @@ function closeVideo(){vm.hidden=true;vf.replaceChildren();vtok++}
 document.getElementById('vs').onsubmit=ev=>{ev.preventDefault();const q=vq.value.trim();if(q)search(q)};
 document.getElementById('vx').onclick=closeVideo;
 vm.onclick=ev=>{if(ev.target===vm)closeVideo()};
-addEventListener('keydown',ev=>{if(ev.key==='Escape')closeVideo()});
+addEventListener('keydown',ev=>{if(ev.key==='Escape'){closeVideo();closeStreetViewPopup()}});
 function render(e){
 activeStreetTarget={coords:[e.c[0],e.c[1]],name:e.n};
 dbody.innerHTML=`<div class="dh"><h2>${e.n}</h2><div class="facts"><div class="fact"><span>Area</span><b>${e.area}</b></div><div class="fact"><span>Capital</span><b>${e.cap}</b></div><div class="fact"><span>Joined the Union</span><b>${e.yr}</b></div></div></div><p class="about">${e.t}</p><div class="gal">${e.L.map(([n,k,d],i)=>`<div class="card" data-k="${k}" style="--c:${i}"><div class="im">${IMGDATA[k]?`<img src="${IMGDATA[k]}" alt="${n}" loading="lazy">`:''}</div><div class="cb"><h4>${n}</h4><p>${d}</p><button class="vid" data-k="${k}" data-n="${n}">&#9654; Watch video</button></div></div>`).join('')}</div>`;
@@ -337,7 +388,7 @@ window.getUAEMapView=()=>{const c=map.getCenter();return{center:[c.lng,c.lat],zo
 window.setUAE2DView=(c,z)=>map.setView(c,z,{animate:false});
 window.pickUAEEmirate=(id,go=true)=>pick(id,go);
 window.flyUAELandmark=k=>{if(LL[k]){const item=E.flatMap(e=>e.L).find(x=>x[1]===k);fly(LL[k],15,item?item[0]:'Landmark')}};
-window.openUAEStreetViewAt=(lat,lng,name)=>openStreetViewAt([lat,lng],name);
+window.openUAEStreetViewAt=(lat,lng,name)=>openStreetViewPopup([lat,lng],name);
 const fl=document.getElementById('flag'),fx=fl.getContext('2d');
 const W=560,H=280,PD=18;
 const fo=document.createElement('canvas');fo.width=W;fo.height=H;
